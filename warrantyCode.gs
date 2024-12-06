@@ -37,7 +37,7 @@ function installedOnEdit(e)
         else // User is editing the status page which actively makes changes to the All_Active_Warranties
           updateAllActiveWarranties_StatusPage(e, range, row - 3, col, sheet, spreadsheet)
       }
-      else if (col === 1)
+      else if (col === 3)
         populateRepairForm(range, spreadsheet, e.value)
     }
   }
@@ -147,7 +147,7 @@ function addOneRow()
   const statusPage = SpreadsheetApp.getActiveSheet()
   const lastRow = statusPage.getLastRow()
   statusPage.insertRowAfter(lastRow).getRange(lastRow + 1, 1).activate()
-  SpreadsheetApp.getActive().toast('Please enter a Tag#','New Warranty', 10)
+  SpreadsheetApp.getActive().toast('Please enter a Tag#', 'New Warranty', 10)
 }
 
 /**
@@ -394,6 +394,7 @@ function createNew_FromRepairForm()
     repairFormValues[ 8][7] = ''
     repairFormValues[ 9][7] = ''
     repairFormValues[10][7] = ''
+    repairFormValues[11][7] = ''
 
     repairFormValues[ 5][2] = ''
     repairFormValues[ 6][1] = ''
@@ -401,6 +402,7 @@ function createNew_FromRepairForm()
     repairFormValues[ 8][1] = ''
     repairFormValues[ 9][1] = ''
     repairFormValues[10][1] = ''
+    repairFormValues[11][1] = ''
 
     repairFormValues[12][2] = ''
     repairFormValues[13][1] = ''
@@ -474,37 +476,41 @@ function createNew_FromRepairForm()
     }
 
     statusPage.appendRow([
-      null, //Tag#
-      null, //Checkbox
-      repairFormValues[0][2], //Name
-      null, //Current Status 
-      city, //City
-      province, //Province
-      repairFormValues[3][2], //Phone
-      repairFormValues[3][4], //Email
-      null, //Items
-      repairFormValues[2][7], //Type
-      repairFormValues[1][7], //Created Date
-      repairFormValues[3][7]  //CreatedBy
+      null,                   // Tag#
+      null,                   // Checkbox
+      repairFormValues[1][7], // Created Date
+      repairFormValues[3][7], // Created By
+      repairFormValues[0][2], // Customer Name
+      repairFormValues[0][4], // Company Name
+      null,                   // Current Status 
+      street,                 // Address
+      city,                   // City
+      province,               // Province
+      repairFormValues[3][2], // Phone
+      repairFormValues[3][4], // Email
+      null,                   // Items
+      repairFormValues[2][7]  // Type
     ])
 
     warrantiesSheet.appendRow([
-      null, //Tag#
-      repairFormValues[0][2], //Name
-      street, //Address
-      city, //City
-      province, //Province
-      postalCode, //Postal Code
-      repairFormValues[3][2], //Phone
-      repairFormValues[3][4], //Email
-      repairFormValues[1][7], //Created Date
-      repairFormValues[2][7], //Type
-      repairFormValues[3][7], //PNT Contact
-      repairFormValues[5][7], //Supplier
-      ...new Array(44).fill('')
+      null,                   // Tag#
+      repairFormValues[0][2], // Customer Name
+      repairFormValues[0][4], // Company Name
+      street,                 // Address
+      city,                   // City
+      province,               // Province
+      postalCode,             // Postal Code
+      repairFormValues[3][2], // Phone
+      repairFormValues[3][4], // Email
+      repairFormValues[1][7], // Created Date
+      repairFormValues[2][7], // Type
+      repairFormValues[3][7], // PNT Contact
+      repairFormValues[5][7], // Supplier
+      ...new Array(warrantiesSheet.getLastColumn() - 13).fill('')
     ])
 
-    repairFormRange.setValues(repairFormValues).offset(0, 7, 1, 1).activate()
+    repairFormRange.setValues(repairFormValues).offset(0, 7, 1, 1).activate();
+    spreadsheet.toast('Please enter a Tag#', 'New Warranty', 10);
   }
 }
 
@@ -589,7 +595,7 @@ function manageStatusPage(e)
 
     sheet.getRange(i + 2, 1).activate()
 
-    spreadsheet.toast('Please enter a Tag#','New Warranty', 10)
+    spreadsheet.toast('Please enter a Tag#', 'New Warranty', 10)
   }
 }
 
@@ -605,7 +611,7 @@ function populateRepairForm(range, spreadsheet, complete)
 
   if (arguments.length === 3)
   {
-    var index = 57;
+    var index = 60;
     var warrantiesSheet = spreadsheet.getSheetByName('Completed_Warranties');
     var tagNum = complete;
     range.setValue('Completed Warranties')
@@ -632,59 +638,62 @@ function populateRepairForm(range, spreadsheet, complete)
 
     formValues[ 0][7] = values[ 0].toString(); //Tag #
     formValues[ 0][2] = values[ 1]; //Name
-    formValues[ 2][2] = values[ 2] + ', ' + values[3] + ', ' + values[4] + '  ' + values[5]; //Address, City, Province  Postal Code
-    formValues[ 3][2] = values[ 6]; //Phone
-    formValues[ 3][4] = values[ 7]; //Email
-    formValues[ 1][7] = formatDate(values[8], spreadsheet) //Date Received From Customer
-    formValues[ 2][7] = values[ 9]; //Type
-    formValues[ 3][7] = values[10]; //PNT Contact
-    formValues[ 5][7] = values[11]; //Supplier
-    formValues[ 6][7] = values[12]; //Shipped Date
-    formValues[ 7][7] = values[13]; //Carrier
-    formValues[ 8][7] = values[14]; //Tracking#
-    formValues[ 9][7] = values[15]; //Ship Cost
-    formValues[10][7] = formatDate(values[16], spreadsheet) //Ship Back Date
-    formValues[ 5][2] = values[17]; //Item1
-    formValues[ 6][1] = values[18]; //Item2
-    formValues[ 7][1] = values[19]; //Item3
-    formValues[ 8][1] = values[20]; //Item4
-    formValues[ 9][1] = values[21]; //Item5
-    formValues[10][1] = values[22]; //Item6
-    formValues[12][2] = values[23]; //Notes1
-    formValues[13][1] = values[24]; //Notes2
-    formValues[14][1] = values[25]; //Notes3
-    formValues[15][1] = values[26]; //Notes4
-    formValues[19][0] = values[27]; //Contact1
-    formValues[19][2] = values[28]; //Status1
-    formValues[19][3] = formatDate(values[29], spreadsheet) //Date1
-    formValues[19][4] = values[30]; //Comments1
-    formValues[20][0] = values[31]; //Contact2
-    formValues[20][2] = values[32]; //Status2
-    formValues[20][3] = formatDate(values[33], spreadsheet) //Date2
-    formValues[20][4] = values[34]; //Comments2
-    formValues[21][0] = values[35]; //Contact3
-    formValues[21][2] = values[36]; //Status3
-    formValues[21][3] = formatDate(values[37], spreadsheet) //Date3
-    formValues[21][4] = values[38]; //Comments3
-    formValues[22][0] = values[39]; //Contact4
-    formValues[22][2] = values[40]; //Status4
-    formValues[22][3] = formatDate(values[41], spreadsheet) //Date4
-    formValues[22][4] = values[42]; //Comments4
-    formValues[23][0] = values[43]; //Contact5
-    formValues[23][2] = values[44]; //Status5
-    formValues[23][3] = formatDate(values[45], spreadsheet) //Date5
-    formValues[23][4] = values[46]; //Comments5
-    formValues[24][0] = values[47]; //Contact6
-    formValues[24][2] = values[48]; //Status6
-    formValues[24][3] = formatDate(values[49], spreadsheet) //Date6
-    formValues[24][4] = values[50]; //Comments6
-    formValues[25][0] = values[51]; //Contact7
-    formValues[25][2] = values[52]; //Status7
-    formValues[25][3] = formatDate(values[53], spreadsheet) //Date7
-    formValues[25][4] = values[54]; //Comments7
+    formValues[ 0][4] = values[ 2]; //Company Name
+    formValues[ 2][2] = values[ 3] + ', ' + values[4] + ', ' + values[5] + '  ' + values[6]; //Address, City, Province  Postal Code
+    formValues[ 3][2] = values[ 7]; //Phone
+    formValues[ 3][4] = values[ 8]; //Email
+    formValues[ 1][7] = formatDate(values[9], spreadsheet) //Date Received From Customer
+    formValues[ 2][7] = values[10]; //Type
+    formValues[ 3][7] = values[11]; //PNT Contact
+    formValues[ 5][7] = values[12]; //Supplier
+    formValues[ 6][7] = values[13]; //Shipped Date
+    formValues[ 7][7] = values[14]; //Carrier
+    formValues[ 8][7] = values[15]; //Tracking#
+    formValues[ 9][7] = values[16]; //Repair Cost
+    formValues[10][7] = values[17]; //Ship Cost
+    formValues[11][7] = formatDate(values[18], spreadsheet) //Ship Back Date
+    formValues[ 5][2] = values[19]; //Item1
+    formValues[ 6][1] = values[20]; //Item2
+    formValues[ 7][1] = values[21]; //Item3
+    formValues[ 8][1] = values[22]; //Item4
+    formValues[ 9][1] = values[23]; //Item5
+    formValues[10][1] = values[24]; //Item6
+    formValues[11][1] = values[25]; //Item7
+    formValues[12][2] = values[26]; //Notes1
+    formValues[13][1] = values[27]; //Notes2
+    formValues[14][1] = values[28]; //Notes3
+    formValues[15][1] = values[29]; //Notes4
+    formValues[19][0] = values[30]; //Contact1
+    formValues[19][2] = values[31]; //Status1
+    formValues[19][3] = formatDate(values[32], spreadsheet) //Date1
+    formValues[19][4] = values[33]; //Comments1
+    formValues[20][0] = values[34]; //Contact2
+    formValues[20][2] = values[35]; //Status2
+    formValues[20][3] = formatDate(values[36], spreadsheet) //Date2
+    formValues[20][4] = values[37]; //Comments2
+    formValues[21][0] = values[38]; //Contact3
+    formValues[21][2] = values[39]; //Status3
+    formValues[21][3] = formatDate(values[40], spreadsheet) //Date3
+    formValues[21][4] = values[41]; //Comments3
+    formValues[22][0] = values[42]; //Contact4
+    formValues[22][2] = values[43]; //Status4
+    formValues[22][3] = formatDate(values[44], spreadsheet) //Date4
+    formValues[22][4] = values[45]; //Comments4
+    formValues[23][0] = values[46]; //Contact5
+    formValues[23][2] = values[47]; //Status5
+    formValues[23][3] = formatDate(values[48], spreadsheet) //Date5
+    formValues[23][4] = values[49]; //Comments5
+    formValues[24][0] = values[50]; //Contact6
+    formValues[24][2] = values[51]; //Status6
+    formValues[24][3] = formatDate(values[52], spreadsheet) //Date6
+    formValues[24][4] = values[53]; //Comments6
+    formValues[25][0] = values[54]; //Contact7
+    formValues[25][2] = values[55]; //Status7
+    formValues[25][3] = formatDate(values[56], spreadsheet) //Date7
+    formValues[25][4] = values[57]; //Comments7
 
     if (complete != null)
-      completedDateRange.setValues([['Completed Date:', formatDate(values[56], spreadsheet)]])
+      completedDateRange.setValues([['Completed Date:', formatDate(values[59], spreadsheet)]])
 
     range.setValues(formValues).activate()
   }
@@ -722,69 +731,72 @@ function refresh()
 
       repairFormData[1][0] = '';
       repairFormData[1][1] = 'Customer Name:';
-      repairFormData[1][2] = allActiveWarrantiesValues[i][1]; //Name
+      repairFormData[1][2] = allActiveWarrantiesValues[i][1]; // Name
       repairFormData[1][5] = '';
       repairFormData[1][6] = 'Tag #';
 
       repairFormData[2][6] = 'Received from Customer:';
-      repairFormData[2][7] = allActiveWarrantiesValues[i][8]; //Created Date
+      repairFormData[2][7] = allActiveWarrantiesValues[i][8]; // Created Date
 
       repairFormData[3][1] = 'Address:';
       repairFormData[3][2] = allActiveWarrantiesValues[i][2] + ', ' + allActiveWarrantiesValues[i][3] + ', ' + allActiveWarrantiesValues[i][4] + '  ' + allActiveWarrantiesValues[i][5]; //Address
       repairFormData[3][6] = 'Type:';
-      repairFormData[3][7] = allActiveWarrantiesValues[i][9]; //Type
+      repairFormData[3][7] = allActiveWarrantiesValues[i][9]; // Type
 
       repairFormData[4][1] = 'Phone:';
-      repairFormData[4][2] = allActiveWarrantiesValues[i][6]; //Phone
+      repairFormData[4][2] = allActiveWarrantiesValues[i][6]; // Phone
       repairFormData[4][3] = 'Email:';
-      repairFormData[4][4] = allActiveWarrantiesValues[i][7]; //Email
+      repairFormData[4][4] = allActiveWarrantiesValues[i][7]; // Email
       repairFormData[4][6] = 'PNT Contact:';
-      repairFormData[4][7] = allActiveWarrantiesValues[i][10]; //PNT Contact
+      repairFormData[4][7] = allActiveWarrantiesValues[i][10]; // PNT Contact
 
       repairFormData[5][0] = '';
 
       repairFormData[6][0] = 'Item(s):';
-      repairFormData[6][2] = allActiveWarrantiesValues[i][17]; // Item # 1
+      repairFormData[6][2] = allActiveWarrantiesValues[i][18]; // Item # 1
       repairFormData[6][5] = ''; 
       repairFormData[6][6] = 'Supplier:'; 
-      repairFormData[6][7] = allActiveWarrantiesValues[i][11]; //Supplier
+      repairFormData[6][7] = allActiveWarrantiesValues[i][11]; // Supplier
 
       repairFormData[7][0] = '';
-      repairFormData[7][1] = allActiveWarrantiesValues[i][18]; // Item # 2
+      repairFormData[7][1] = allActiveWarrantiesValues[i][19]; // Item # 2
       repairFormData[7][6] = 'Ship Date:'; 
-      repairFormData[7][7] = allActiveWarrantiesValues[i][12]; //Ship Date
+      repairFormData[7][7] = allActiveWarrantiesValues[i][12]; // Ship Date
 
       repairFormData[8][0] = '';
-      repairFormData[8][1] = allActiveWarrantiesValues[i][19]; // Item # 3
+      repairFormData[8][1] = allActiveWarrantiesValues[i][20]; // Item # 3
       repairFormData[8][6] = 'Carrier:'; 
-      repairFormData[8][7] = allActiveWarrantiesValues[i][13]; //Carrier
+      repairFormData[8][7] = allActiveWarrantiesValues[i][13]; // Carrier
 
       repairFormData[9][0] = '';
-      repairFormData[9][1] = allActiveWarrantiesValues[i][20]; // Item # 4
+      repairFormData[9][1] = allActiveWarrantiesValues[i][21]; // Item # 4
       repairFormData[9][6] = 'Tracking#:'; 
-      repairFormData[9][7] = allActiveWarrantiesValues[i][14]; //Tracking#
+      repairFormData[9][7] = allActiveWarrantiesValues[i][14]; // Tracking#
 
       repairFormData[10][0] = '';
-      repairFormData[10][1] = allActiveWarrantiesValues[i][21]; // Item # 5
-      repairFormData[10][6] = 'Ship Cost:'; 
-      repairFormData[10][7] = allActiveWarrantiesValues[i][15]; //Ship Cost
+      repairFormData[10][1] = allActiveWarrantiesValues[i][22]; // Item # 5
+      repairFormData[10][6] = 'Repair Cost:'; 
+      repairFormData[10][7] = allActiveWarrantiesValues[i][15]; // Repair Cost
 
       repairFormData[11][0] = '';
-      repairFormData[11][1] = allActiveWarrantiesValues[i][22]; // Item # 6
-      repairFormData[11][6] = 'Ship Back Date:'; 
-      repairFormData[11][7] = allActiveWarrantiesValues[i][16]; //Ship Back Date
+      repairFormData[11][1] = allActiveWarrantiesValues[i][23]; // Item # 6
+      repairFormData[11][6] = 'Ship Cost:'; 
+      repairFormData[11][7] = allActiveWarrantiesValues[i][16]; // Ship Cost
 
       repairFormData[12][0] = '';
+      repairFormData[12][1] = allActiveWarrantiesValues[i][24]; // Item # 7
+      repairFormData[12][6] = 'Ship Back Date:'; 
+      repairFormData[12][7] = allActiveWarrantiesValues[i][17]; // Ship Back Date
 
       repairFormData[13][0] = 'Notes / Special Instructions:';
-      repairFormData[13][2] = allActiveWarrantiesValues[i][23]; //Notes1
+      repairFormData[13][2] = allActiveWarrantiesValues[i][25]; // Notes1
       
       repairFormData[14][0] = '';
-      repairFormData[14][1] = allActiveWarrantiesValues[i][24]; //Notes2
+      repairFormData[14][1] = allActiveWarrantiesValues[i][26]; // Notes2
 
-      repairFormData[15][1] = allActiveWarrantiesValues[i][25]; //Notes3
+      repairFormData[15][1] = allActiveWarrantiesValues[i][27]; // Notes3
 
-      repairFormData[16][1] = allActiveWarrantiesValues[i][26]; //Notes4
+      repairFormData[16][1] = allActiveWarrantiesValues[i][28]; // Notes4
 
       repairFormData[17][0] = '';
 
@@ -796,40 +808,40 @@ function refresh()
       repairFormData[19][3] = 'Date';
       repairFormData[19][4] = 'Comments';
 
-      repairFormData[20][0] = allActiveWarrantiesValues[i][27]; //Contact1
-      repairFormData[20][2] = allActiveWarrantiesValues[i][28]; //Status1
-      repairFormData[20][3] = allActiveWarrantiesValues[i][29]; //Date1
-      repairFormData[20][4] = allActiveWarrantiesValues[i][30]; //Comment1
+      repairFormData[20][0] = allActiveWarrantiesValues[i][29]; //Contact1
+      repairFormData[20][2] = allActiveWarrantiesValues[i][30]; //Status1
+      repairFormData[20][3] = allActiveWarrantiesValues[i][31]; //Date1
+      repairFormData[20][4] = allActiveWarrantiesValues[i][32]; //Comment1
 
-      repairFormData[21][0] = allActiveWarrantiesValues[i][31]; //Contact2
-      repairFormData[21][2] = allActiveWarrantiesValues[i][32]; //Status2
-      repairFormData[21][3] = allActiveWarrantiesValues[i][33]; //Date2
-      repairFormData[21][4] = allActiveWarrantiesValues[i][34]; //Comment2
+      repairFormData[21][0] = allActiveWarrantiesValues[i][33]; //Contact2
+      repairFormData[21][2] = allActiveWarrantiesValues[i][34]; //Status2
+      repairFormData[21][3] = allActiveWarrantiesValues[i][35]; //Date2
+      repairFormData[21][4] = allActiveWarrantiesValues[i][36]; //Comment2
       
-      repairFormData[22][0] = allActiveWarrantiesValues[i][35]; //Contact3
-      repairFormData[22][2] = allActiveWarrantiesValues[i][36]; //Status3
-      repairFormData[22][3] = allActiveWarrantiesValues[i][37]; //Date3
-      repairFormData[22][4] = allActiveWarrantiesValues[i][38]; //Comment3
+      repairFormData[22][0] = allActiveWarrantiesValues[i][37]; //Contact3
+      repairFormData[22][2] = allActiveWarrantiesValues[i][38]; //Status3
+      repairFormData[22][3] = allActiveWarrantiesValues[i][39]; //Date3
+      repairFormData[22][4] = allActiveWarrantiesValues[i][40]; //Comment3
 
-      repairFormData[23][0] = allActiveWarrantiesValues[i][39]; //Contact4
-      repairFormData[23][2] = allActiveWarrantiesValues[i][40]; //Status4
-      repairFormData[23][3] = allActiveWarrantiesValues[i][41]; //Date4
-      repairFormData[23][4] = allActiveWarrantiesValues[i][42]; //Comment4
+      repairFormData[23][0] = allActiveWarrantiesValues[i][41]; //Contact4
+      repairFormData[23][2] = allActiveWarrantiesValues[i][42]; //Status4
+      repairFormData[23][3] = allActiveWarrantiesValues[i][43]; //Date4
+      repairFormData[23][4] = allActiveWarrantiesValues[i][44]; //Comment4
 
-      repairFormData[24][0] = allActiveWarrantiesValues[i][43]; //Contact5
-      repairFormData[24][2] = allActiveWarrantiesValues[i][44]; //Status5
-      repairFormData[24][3] = allActiveWarrantiesValues[i][45]; //Date5
-      repairFormData[24][4] = allActiveWarrantiesValues[i][46]; //Comment5
+      repairFormData[24][0] = allActiveWarrantiesValues[i][45]; //Contact5
+      repairFormData[24][2] = allActiveWarrantiesValues[i][46]; //Status5
+      repairFormData[24][3] = allActiveWarrantiesValues[i][47]; //Date5
+      repairFormData[24][4] = allActiveWarrantiesValues[i][48]; //Comment5
 
-      repairFormData[25][0] = allActiveWarrantiesValues[i][47]; //Contact6
-      repairFormData[25][2] = allActiveWarrantiesValues[i][48]; //Status6
-      repairFormData[25][3] = allActiveWarrantiesValues[i][49]; //Date6
-      repairFormData[25][4] = allActiveWarrantiesValues[i][50]; //Comment6
+      repairFormData[25][0] = allActiveWarrantiesValues[i][49]; //Contact6
+      repairFormData[25][2] = allActiveWarrantiesValues[i][50]; //Status6
+      repairFormData[25][3] = allActiveWarrantiesValues[i][51]; //Date6
+      repairFormData[25][4] = allActiveWarrantiesValues[i][52]; //Comment6
 
-      repairFormData[26][0] = allActiveWarrantiesValues[i][51]; //Contact7
-      repairFormData[26][2] = allActiveWarrantiesValues[i][52]; //Status7
-      repairFormData[26][3] = allActiveWarrantiesValues[i][53]; //Date7
-      repairFormData[26][4] = allActiveWarrantiesValues[i][54]; //Comment7
+      repairFormData[26][0] = allActiveWarrantiesValues[i][53]; //Contact7
+      repairFormData[26][2] = allActiveWarrantiesValues[i][54]; //Status7
+      repairFormData[26][3] = allActiveWarrantiesValues[i][55]; //Date7
+      repairFormData[26][4] = allActiveWarrantiesValues[i][56]; //Comment7
 
       var numFormats = [
         ['@', '@', '@', '@', '@', '@', '@', '@'],
@@ -867,7 +879,7 @@ function refresh()
       if (allActiveWarrantiesValues[i][0] === allStatusPageData[j][0])
       {
         allStatusPageData[j][ 2] = allActiveWarrantiesValues[i][ 1]; //Name
-        allStatusPageData[j][ 3] = allActiveWarrantiesValues[i][55]; //Current Status
+        allStatusPageData[j][ 3] = allActiveWarrantiesValues[i][allActiveWarrantiesValues[0].length - 1]; //Current Status
         allStatusPageData[j][ 4] = allActiveWarrantiesValues[i][ 3]; //City
         allStatusPageData[j][ 5] = allActiveWarrantiesValues[i][ 4]; //Province
         allStatusPageData[j][ 6] = allActiveWarrantiesValues[i][ 6]; //Phone
@@ -877,12 +889,12 @@ function refresh()
         allStatusPageData[j][11] = allActiveWarrantiesValues[i][10]; //Created By
 
         items = [
-          allActiveWarrantiesValues[i][17],
           allActiveWarrantiesValues[i][18],
           allActiveWarrantiesValues[i][19],
           allActiveWarrantiesValues[i][20],
           allActiveWarrantiesValues[i][21],
-          allActiveWarrantiesValues[i][22]
+          allActiveWarrantiesValues[i][22],
+          allActiveWarrantiesValues[i][23]
         ]
         
         allStatusPageData[j][ 8] = items.filter(item => !isBlank(item)).join('\n')
@@ -892,7 +904,7 @@ function refresh()
   }
   
   if (numRows_StatusPage !== 0)
-    statusPageRange.setNumberFormats(new Array(numRows_StatusPage).fill(['@', '#', '@', '@', '@', '@', '@', '@', '@', '@', 'dd MMM yyyy', '@'])).setValues(allStatusPageData)
+    statusPageRange.setNumberFormats(new Array(numRows_StatusPage).fill(['@', '#', 'dd MMM yyyy', '@', '@', '@', '@', '@', '@', '@', '@', '@', '@', '@'])).setValues(allStatusPageData)
 
   if (numRows_RepairForm !== 0)
     repairFormRange.setNumberFormats(numFormats).setValues(repairFormData)
@@ -996,7 +1008,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
         {
           if (isBlank(tagNumbers[i][0]))
           {
-            allActiveWarrantiesSheet.getRange(i + 2, 1).setValue(tagNum)
+            allActiveWarrantiesSheet.getRange(i + 2, 1).setNumberFormat('@').setValue(tagNum)
             break;
           }
         }
@@ -1036,10 +1048,8 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
       var colIndex = null;
 
       for (var j = 0; j < nRows; j++)
-      {
         if (allStatusPageData[j][0] === tagNum)
           break;
-      }
 
       switch (row)
       {
@@ -1069,6 +1079,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
           break;
         case 2:
+
           switch (col)
           {
             case 2:
@@ -1076,9 +1087,18 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 3:
-              allStatusPageData[j][2] = toProper(newValue);
-              range.setValue(allStatusPageData[j][2])
+              allStatusPageData[j][4] = toProper(newValue);
+              range.setValue(allStatusPageData[j][4])
               colIndex = 2;
+              break;
+            case 4:
+              range.setValue('Company Name:')
+              SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
+              break;
+            case 5:
+              allStatusPageData[j][5] = toProper(newValue);
+              range.setValue(allStatusPageData[j][5])
+              colIndex = 3;
               break;
             case 7:
               range.setValue('Tag #')
@@ -1130,8 +1150,6 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
 
               break;
             case 1:
-            case 4:
-            case 5:
             case 6:
               range.setValue('')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
@@ -1148,8 +1166,8 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              allStatusPageData[j][10] = newValue;
-              colIndex = 9;
+              allStatusPageData[j][2] = newValue; // Created by date
+              colIndex = 10;
               break;
             case 1:
             case 2:
@@ -1173,7 +1191,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               break;
             case 3:
 
-              const addressRange = allActiveWarrantiesSheet.getRange(rowIndex, 3, 1, 4)
+              const addressRange = allActiveWarrantiesSheet.getRange(rowIndex, 4, 1, 4)
               var postCode = toProper(newValue).split('  ');
               var address = postCode[0].split(', ');
               range.setValue(toProper(newValue))
@@ -1190,37 +1208,41 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                   case 2:
                     addressValues[0][0] = address[0];
                     addressValues[0][1] = address[1];
-                    allStatusPageData[j][4] = address[1];
-                    allStatusPageData[j][5] = '';
+                    allStatusPageData[j][7] = address[0];
+                    allStatusPageData[j][8] = address[1];
+                    allStatusPageData[j][9] = '';
                     break;
                   case 3:
                     addressValues[0][0] = address[0];
                     addressValues[0][1] = address[1];
                     addressValues[0][2] = address[2];
-                    allStatusPageData[j][4] = address[1];
-                    allStatusPageData[j][5] = address[2];
+                    allStatusPageData[j][7] = address[0];
+                    allStatusPageData[j][8] = address[1];
+                    allStatusPageData[j][8] = address[2];
                     break;
                   case 4:
                     addressValues[0][0] = address[0];
                     addressValues[0][1] = address[1];
                     addressValues[0][2] = address[2];
                     addressValues[0][3] = formatPostalCode(address[3]);
-                    allStatusPageData[j][4] = address[1];
-                    allStatusPageData[j][5] = address[2];
+                    allStatusPageData[j][7] = address[0];
+                    allStatusPageData[j][8] = address[1];
+                    allStatusPageData[j][8] = address[2];
                     break;
                   default:
                     addressValues[0][0] = address[0];
-                    allStatusPageData[j][4] = address[0];
-                    allStatusPageData[j][5] = '';
+                    allStatusPageData[j][7] = address[0];
+                    allStatusPageData[j][8] = '';
+                    allStatusPageData[j][9] = '';
                 }
 
-                addressRange.setValues(addressValues)
+                addressRange.setNumberFormat('@').setValues(addressValues)
               }
               else
                 addressRange.setValue('')
 
               if (j !== nRows)
-                statusPageRange.setNumberFormats(new Array(nRows).fill(['@', '#', '@', '@', '@', '@', '@', '@', '@', '@', 'dd MMM yyyy', '@'])).setValues(allStatusPageData)
+                statusPageRange.setNumberFormats(new Array(nRows).fill(['@', '#', 'dd MMM yyyy', '@', '@', '@', '@', '@', '@', '@', '@', '@', '@', '@'])).setValues(allStatusPageData)
 
               return;
             case 7:
@@ -1228,9 +1250,9 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              allStatusPageData[j][9] = toProper(newValue);
-              range.setValue(allStatusPageData[j][9])
-              colIndex = 10;
+              allStatusPageData[j][13] = toProper(newValue);
+              range.setValue(allStatusPageData[j][13])
+              colIndex = 11;
               break;
             case 1:
             case 4:
@@ -1251,27 +1273,27 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 3:
-              allStatusPageData[j][6] = formatPhoneNumber(newValue);
-              range.setValue(allStatusPageData[j][6])
-              colIndex = 7;
+              allStatusPageData[j][10] = formatPhoneNumber(newValue);
+              range.setValue(allStatusPageData[j][10])
+              colIndex = 8;
               break;
             case 4:
               range.setValue('Email:')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 5:
-              allStatusPageData[j][7] = newValue.toString().toLowerCase();
-              range.setValue(allStatusPageData[j][7])
-              colIndex = 8;
+              allStatusPageData[j][11] = newValue.toString().toLowerCase();
+              range.setValue(allStatusPageData[j][11])
+              colIndex = 9;
               break;
             case 7:
               range.setValue('PNT Contact:')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              allStatusPageData[j][11] = toProper(newValue);
-              range.setValue(allStatusPageData[j][11])
-              colIndex = 11;
+              allStatusPageData[j][3] = toProper(newValue);
+              range.setValue(allStatusPageData[j][3])
+              colIndex = 12;
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 1:
@@ -1291,13 +1313,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 3:
-              colIndex = 18;
+              colIndex = 20;
               const items = repairForm.getSheetValues(8, 2, 5, 1).flat().filter(u => !isBlank(u))
 
               if (!isBlank(newValue))
                 items.unshift(newValue)
 
-              allStatusPageData[j][8] = items.join('\n');
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
               range.setValue('Supplier:')
@@ -1306,7 +1328,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
             case 8:
               newValue = toProper(newValue)
               range.setValue(newValue)
-              colIndex = 12;
+              colIndex = 13;
               manageDataValidation('Supplier', newValue, spreadsheet);
               break;
             case 2:
@@ -1324,16 +1346,16 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 2:
-              colIndex = 19;
-              const items = repairForm.getSheetValues(7, 2, 6, 2).flat().filter(u => !isBlank(u))
-              allStatusPageData[j][8] = items.join('\n');
+              colIndex = 21;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
               range.setValue('Ship Date:')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              colIndex = 13;
+              colIndex = 14;
               break;
             case 1:
             case 3:
@@ -1351,9 +1373,9 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 2:
-              colIndex = 20;
-              const items = repairForm.getSheetValues(7, 2, 6, 2).flat().filter(u => !isBlank(u))
-              allStatusPageData[j][8] = items.join('\n');
+              colIndex = 22;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
               range.setValue('Carrier:')
@@ -1362,7 +1384,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
             case 8:
               newValue = toProper(newValue)
               range.setValue(newValue)
-              colIndex = 14;
+              colIndex = 15;
               break;
             case 1:
             case 3:
@@ -1380,9 +1402,9 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 2:
-              colIndex = 21;
-              const items = repairForm.getSheetValues(7, 2, 6, 2).flat().filter(u => !isBlank(u))
-              allStatusPageData[j][8] = items.join('\n');
+              colIndex = 23;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
               range.setValue('Tracking#:')
@@ -1391,7 +1413,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
             case 8:
               newValue = newValue.toString().toUpperCase()
               range.setValue(newValue)
-              colIndex = 15;
+              colIndex = 16;
               break;
             case 1:
             case 3:
@@ -1409,16 +1431,16 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 2:
-              colIndex = 22;
-              const items = repairForm.getSheetValues(7, 2, 6, 2).flat().filter(u => !isBlank(u))
-              allStatusPageData[j][8] = items.join('\n');
+              colIndex = 24;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
-              range.setValue('Ship Cost:')
+              range.setValue('Repair Cost:')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              colIndex = 16;
+              colIndex = 17;
               break;
             case 1:
             case 3:
@@ -1436,16 +1458,16 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 2:
-              colIndex = 23;
-              const items = repairForm.getSheetValues(7, 2, 6, 2).flat().filter(u => !isBlank(u))
-              allStatusPageData[j][8] = items.join('\n');
+              colIndex = 25;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
               break;
             case 7:
-              range.setValue('Ship Back Date:')
+              range.setValue('Ship Cost:')
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 8:
-              colIndex = 17;
+              colIndex = 18;
               break;
             case 1:
             case 3:
@@ -1459,7 +1481,31 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
 
           break;
         case 13:
-          Logger.log('The new cell was changed')
+          
+          switch (col)
+          {
+            case 2:
+              colIndex = 26;
+              const items = repairForm.getSheetValues(7, 2, 7, 2).flat().filter(u => !isBlank(u) && u !== 'Item(s):')
+              allStatusPageData[j][12] = items.join('\n');
+              break;
+            case 7:
+              range.setValue('Ship Back Date:')
+              SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
+              break;
+            case 8:
+              colIndex = 19;
+              break;
+            case 1:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+              range.setValue('')
+              SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
+              break;
+          }
+
           break;
         case 14:
 
@@ -1470,7 +1516,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
               SpreadsheetApp.getUi().alert('You can\'t edit a protected range.')
               break;
             case 3:
-              colIndex = 24;
+              colIndex = 27;
               break;
             case 2:
             case 4:
@@ -1489,7 +1535,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {          
             case 2:
-              colIndex = 25;
+              colIndex = 28;
               break;
             case 1:
             case 3:
@@ -1509,7 +1555,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {          
             case 2:
-              colIndex = 26;
+              colIndex = 29;
               break;
             case 1:
             case 3:
@@ -1529,7 +1575,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {          
             case 2:
-              colIndex = 27;
+              colIndex = 30;
               break;
             case 1:
             case 3:
@@ -1600,13 +1646,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 28
+              colIndex = 31
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 29
+              colIndex = 32
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1617,10 +1663,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 30
+              colIndex = 33
               break;
             case 5:
-              colIndex = 31
+              colIndex = 34
               break;
             case 2:
             case 6:
@@ -1637,13 +1683,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 32
+              colIndex = 35
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 33
+              colIndex = 36
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1654,10 +1700,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 34
+              colIndex = 37
               break;
             case 5:
-              colIndex = 35
+              colIndex = 38
               break;
             case 2:
             case 6:
@@ -1674,13 +1720,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 36
+              colIndex = 39
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 37
+              colIndex = 40
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1691,10 +1737,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 38
+              colIndex = 41
               break;
             case 5:
-              colIndex = 39
+              colIndex = 42
               break;
             case 2:
             case 6:
@@ -1711,13 +1757,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 40
+              colIndex = 43
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 41
+              colIndex = 44
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1728,10 +1774,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 42
+              colIndex = 45
               break;
             case 5:
-              colIndex = 43
+              colIndex = 46
               break;
             case 2:
             case 6:
@@ -1748,13 +1794,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 44
+              colIndex = 47
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 45
+              colIndex = 48
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1765,10 +1811,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 46
+              colIndex = 49
               break;
             case 5:
-              colIndex = 47
+              colIndex = 50
               break;
             case 2:
             case 6:
@@ -1785,13 +1831,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 48
+              colIndex = 51
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 49
+              colIndex = 52
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1802,10 +1848,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 50
+              colIndex = 53
               break;
             case 5:
-              colIndex = 51
+              colIndex = 54
               break;
             case 2:
             case 6:
@@ -1822,13 +1868,13 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
           switch (col)
           {
             case 1:
-              colIndex = 52
+              colIndex = 55
               newValue = toProper(newValue)
               range.setValue(newValue)
               manageDataValidation('Name', newValue, spreadsheet);
               break;
             case 3:
-              colIndex = 53
+              colIndex = 56
               var formattedDate = Utilities.formatDate(new Date(), spreadsheet.getSpreadsheetTimeZone(), 'dd MMM yyyy')
               const statusHistory = repairForm.getSheetValues(21, 3, 7, 1).flat().filter(s => !isBlank(s))
               repairForm.getRange(row, col + 1).setValue(formattedDate)
@@ -1839,10 +1885,10 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                                             newValue, statusHistory, tagNum, formattedDate, range, rowIndex, numRows, colIndex)
               break;
             case 4:
-              colIndex = 54
+              colIndex = 57
               break;
             case 5:
-              colIndex = 55
+              colIndex = 58
               break;
             case 2:
             case 6:
@@ -1950,7 +1996,7 @@ function manageStatusChange_repairForm(ss, repairForm, allActiveWarrantiesSheet,
   const nameRange = editRange.offset(0, -2);
   var name = nameRange.getValue(), comments = '';
 
-  values[55] = allStatusPageData[j][3]; // Current Status
+  values[58] = allStatusPageData[j][3]; // Current Status
 
   if (status.split(' / ', 1)[0] === 'Complete') // Current Status is Complete
   {
@@ -1967,7 +2013,7 @@ function manageStatusChange_repairForm(ss, repairForm, allActiveWarrantiesSheet,
     const completedOrders_Sorted = Array.from(new Set(completedOrders.concat([values])
       .sort((a, b) => (a[lastCol - 1] < b[lastCol - 1]) ? 1 : -1).map(JSON.stringify)), JSON.parse)
     completedOrders_Sorted.unshift(header)              
-    completedWarrantiesSheet.getRange(1, 1, lastRow + 1, lastCol).setValues(completedOrders_Sorted)
+    completedWarrantiesSheet.getRange(1, 1, lastRow + 1, lastCol).setNumberFormat('@').setValues(completedOrders_Sorted)
 
     allActiveWarrantiesSheet.deleteRow(row);
 
@@ -2075,39 +2121,22 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         const numRows_StatusPage = statusPage.getLastRow() - 2;
         const numCompletedWarranties = completedWarrantiesSheet.getLastRow() - 1;
 
-        if (numRows > 0)
-        {
-          if (numRows_StatusPage > 0)
-          {
-            var tagNumbers = (numCompletedWarranties > 0) ? 
-              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), 
-                statusPage.getSheetValues(3, 1, numRows_StatusPage, 1), 
-                completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)
-              ].flat(2) :
-              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), statusPage.getSheetValues(3, 1, numRows_StatusPage, 1)].flat(2);
-          }
-          else
-          {
-            var tagNumbers = (numCompletedWarranties > 0) ? 
-              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) : 
-              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1)].flat(2);
-          }
-        }
-        else
-        {
-          if (numRows_StatusPage > 0)
-          {
-            var tagNumbers = (numCompletedWarranties > 0) ? 
-              [statusPage.getSheetValues(3, 1, numRows_StatusPage, 1), completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
-              [statusPage.getSheetValues(3, 1, numRows_StatusPage, 1)].flat(2);
-          }
-          else
-          {
-            var tagNumbers = (numCompletedWarranties > 0) ? 
+        var tagNumbers = 
+          (numRows > 0) ? 
+            (numRows_StatusPage > 0) ? 
+              (numCompletedWarranties > 0) ? 
+                [statusPage.getSheetValues(3, 1, numRows_StatusPage, 1), completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
+              [statusPage.getSheetValues(3, 1, numRows_StatusPage, 1)].flat(2) : 
+            (numCompletedWarranties > 0) ? 
               [completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) : 
-              [];
-          }
-        }
+            [] :
+          (numRows_StatusPage > 0) ? 
+            (numCompletedWarranties > 0) ? 
+              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), statusPage.getSheetValues(3, 1, numRows_StatusPage, 1), completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
+            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), statusPage.getSheetValues(3, 1, numRows_StatusPage, 1)].flat(2) : 
+          (numCompletedWarranties > 0) ? 
+            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) : 
+          [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1)].flat(2);
 
         if (isBlank(newTagNumber))
         {
@@ -2124,7 +2153,7 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         else
         {
           row = allActiveWarrantiesSheet.getLastRow() + 1;
-          allActiveWarrantiesSheet.getRange(row, 1).setValue(newTagNumber)
+          allActiveWarrantiesSheet.getRange(row, 1).setNumberFormat('@').setValue(newTagNumber)
           range.offset(0, 1 - whichFieldToEdit).setNumberFormat('@').setValue(newTagNumber)
         }
       }
@@ -2136,7 +2165,7 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
     }
   }
 
-  var newValue = [range.getValue()];
+  var newValue = [range.getValue()], col;
 
   switch (whichFieldToEdit)
   {
@@ -2155,18 +2184,14 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         const numCompletedWarranties = completedWarrantiesSheet.getLastRow() - 1;
         tagNums[idx_TagNum][0] = e.oldValue.toString()
 
-        if (numRows > 0)
-        {
-          var tagNumbers = (numCompletedWarranties > 0) ? 
-            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
-            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums].flat(2);
-        }
-        else
-        {
-          var tagNumbers = (numCompletedWarranties > 0) ? 
+        var tagNumbers = 
+          (numRows > 0) ? 
+            (numCompletedWarranties > 0) ? 
+              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
+            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums].flat(2) : 
+          (numCompletedWarranties > 0) ? 
             [tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) : 
-            [tagNums].flat(2);
-        }
+          [tagNums].flat(2);
         
         if (tagNumbers.includes(newValue[0]))
         {
@@ -2187,19 +2212,15 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         const tagNums = statusPage.getSheetValues(3, 1, statusPage.getLastRow() - 2, 1);
         const numCompletedWarranties = completedWarrantiesSheet.getLastRow() - 1;
         tagNums.pop()
-        
-        if (numRows > 0)
-        {
-          var tagNumbers = (numCompletedWarranties > 0) ? 
-            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
-            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums].flat(2);
-        }
-        else
-        {
-          var tagNumbers = (numCompletedWarranties > 0) ? 
+
+        var tagNumbers = 
+          (numRows > 0) ? 
+            (numCompletedWarranties > 0) ? 
+              [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) :
+            [allActiveWarrantiesSheet.getSheetValues(2, 1, numRows, 1), tagNums].flat(2) : 
+          (numCompletedWarranties > 0) ? 
             [tagNums, completedWarrantiesSheet.getSheetValues(2, 1, numCompletedWarranties, 1)].flat(2) : 
-            [tagNums].flat(2);
-        }
+          [tagNums].flat(2) ;
 
         if (tagNumbers.includes(newValue[0]))
         {
@@ -2218,11 +2239,11 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
 
       break;
     case 3: // Created Date
-      col = [9];
+      col = [10];
       newValue[0] = formatDate(range.getDisplayValue(), spreadsheet); //Date
       break;
     case 4: // Created By
-      col = [11];
+      col = [12];
       newValue[0] = toProper(newValue[0]);
       range.setValue(newValue[0])
       manageDataValidation('Name', newValue[0], spreadsheet);
@@ -2232,14 +2253,15 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
       newValue[0] = toProper(newValue[0])
       range.setValue(newValue[0])
       break;
-    case 6: // Company Name /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-      col = [2];
+    case 6:
+      col = [3];
       newValue[0] = toProper(newValue[0])
       range.setValue(newValue[0])
-      break; ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      break;
     case 7: // Current Status
 
-      const range_statusHistory = allActiveWarrantiesSheet.getRange(row, 28, 1, 29);
+      const firstColumnForStatusData = 31;
+      const range_statusHistory = allActiveWarrantiesSheet.getRange(row, firstColumnForStatusData, 1, 29);
       const statusHistory = range_statusHistory.getValues()[0];
       const timeZone = spreadsheet.getSpreadsheetTimeZone();
       const dateFormat = 'dd MMM yyyy'
@@ -2254,9 +2276,9 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
 
         if (isBlank(statusHistory[1 + ii]))
         {
-                 values[ii + 27] = 'Someone';     // Contact
-                 values[ii + 28] = newValue[0];   // Status
-                 values[ii + 29] = formattedDate; // Date
+                 values[ii + 30] = 'Someone';     // Contact
+                 values[ii + 31] = newValue[0];   // Status
+                 values[ii + 32] = formattedDate; // Date
           statusHistory[ii     ] = 'Someone';     // Contact
           statusHistory[ii +  1] = newValue[0];   // Status
           statusHistory[ii +  2] = formattedDate; // Date
@@ -2264,22 +2286,23 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         }
       }
 
-      if (statusHistory[28].split(' / ', 1)[0] === 'Complete') //Current Status is Complete
+      range_statusHistory.setNumberFormat('@').setValues([statusHistory]);
+
+      if (statusHistory[28].split(' / ', 1)[0] === 'Complete') // Current Status is Complete
       {
         const completedWarrantiesSheet = spreadsheet.getSheetByName('Completed_Warranties')
-        values.push(formattedDate, 'Tag# ' + values[0] + ' - ' + values[1] + ' - ' + 
-          formatDate(values[8], spreadsheet) + ' - ' + formattedDate)
+        values.push(formattedDate, 'Tag# ' + values[0] + ' - ' + values[1] + ' - ' + formatDate(values[9], spreadsheet) + ' - ' + formattedDate)
 
         const lastRow = completedWarrantiesSheet.getLastRow();
-        const lastCol = completedWarrantiesSheet.getLastColumn();
-        const completedOrders = completedWarrantiesSheet.getSheetValues(1, 1, lastRow, lastCol)
+        const lastCol = completedWarrantiesSheet.getLastColumn() - 1; // The minus one is for the array indexing for the sorting function just below
+        const completedOrders = completedWarrantiesSheet.getSheetValues(1, 1, lastRow, lastCol + 1)
         const header = completedOrders.shift()
 
-        const completedOrders_Sorted = Array.from(new Set(completedOrders.concat([values])
-          .sort((a, b) => (a[lastCol - 1] < b[lastCol - 1]) ? 1 : -1).map(JSON.stringify)), JSON.parse)
-
+        const completedOrders_Sorted = Array.from(new Set(completedOrders.concat([values]).sort((a, b) => (a[lastCol] < b[lastCol]) ? 1 : -1).map(JSON.stringify)), JSON.parse)
         completedOrders_Sorted.unshift(header)
-        completedWarrantiesSheet.getRange(1, 1, lastRow + 1, lastCol).setValues(completedOrders_Sorted)
+
+        const numCompletedOrders = numFormats.unshift(new Array(lastCol + 1).fill('@'));
+        completedWarrantiesSheet.getRange(1, 1, numCompletedOrders, lastCol + 1).setNumberFormat('@').setValues(completedOrders_Sorted)
 
         const remainingWarranties = allActiveWarranties.filter(tag => tag[0] !== tagNum);
         allActiveWarrantiesSheet.deleteRow(numRows + 1).getRange(2, 1, numRows - 1, remainingWarranties[0].length).setNumberFormat('@').setValues(remainingWarranties)
@@ -2315,34 +2338,33 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
       // else if (statusHistory[28] === 'Sent Back to Richmond for Distribution to Customer')
       //   addWarrantyToTransferSheet(values, 'Parksville', spreadsheet)
       else if (statusHistory[28] === 'Accepted in Richmond' || statusHistory[28] === 'Accepted in Parksville' || statusHistory[28] === 'Accepted in Rupert')
-        statusHistory[ii] = values[10]
+        allActiveWarrantiesSheet.getRange(row, firstColumnForStatusData).setNumberFormat('@').setValue(values[11]);
       else
         manageDataValidation('Status', newValue[0], spreadsheet); // Add a new status if the user is free typing in the cell
 
-      range_statusHistory.setValues([statusHistory])
       return;
     case 8: // Address
-      col = [3];
-      newValue[0] = toProper(newValue[0])
-      range.setValue(newValue[0])
-      break;
-    case 9: // City
       col = [4];
       newValue[0] = toProper(newValue[0])
       range.setValue(newValue[0])
       break;
-    case 10: // Province
+    case 9: // City
       col = [5];
+      newValue[0] = toProper(newValue[0])
+      range.setValue(newValue[0])
+      break;
+    case 10: // Province
+      col = [6];
       newValue[0] = newValue[0].toString().toUpperCase();
       range.setValue(newValue[0])
       break;
     case 11: // Phone
-      col = [7];
+      col = [8];
       newValue[0] = formatPhoneNumber(newValue[0]);
       range.setValue(newValue[0])
       break;
     case 12: // Email
-      col = [8];
+      col = [9];
       newValue[0] = newValue[0].toString().toLowerCase();
       range.setValue(newValue[0])
       break;
@@ -2359,15 +2381,14 @@ function updateAllActiveWarranties_StatusPage(e, range, idx_TagNum, whichFieldTo
         SpreadsheetApp.getUi().alert('Six items maximum. Please reduce the number of rows.')
       }
 
-      col = newValue.map((_,n) => n + 18);
+      col = newValue.map((_,n) => n + 20);
       break;
     case 14: // Type
-      col = [10];
+      col = [11];
       newValue[0] = toProper(newValue[0]);
       range.setValue(newValue[0])
       break;
-
   }
 
-  col.map((c, i) => allActiveWarrantiesSheet.getRange(row, c).setValue(newValue[i]))
+  col.map((c, i) => allActiveWarrantiesSheet.getRange(row, c).setNumberFormat('@').setValue(newValue[i]))
 }
