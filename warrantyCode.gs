@@ -1192,48 +1192,61 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
             case 3:
 
               const addressRange = allActiveWarrantiesSheet.getRange(rowIndex, 4, 1, 4)
-              var postCode = toProper(newValue).split('  ');
+              var postCode = newValue.split('  ');
               var address = postCode[0].split(', ');
-              range.setValue(toProper(newValue))
 
               if (!isBlank(address[0]))
               {
                 const addressValues = [['', '', '', '']]
 
                 if (postCode.length == 2)
+                {
                   addressValues[0][3] = formatPostalCode(postCode[1])
+                  address.push(addressValues[0][3])
+                }
 
                 switch (address.length)
                 {
-                  case 2:
-                    addressValues[0][0] = address[0];
-                    addressValues[0][1] = address[1];
-                    allStatusPageData[j][7] = address[0];
-                    allStatusPageData[j][8] = address[1];
-                    allStatusPageData[j][9] = '';
-                    break;
-                  case 3:
-                    addressValues[0][0] = address[0];
-                    addressValues[0][1] = address[1];
-                    addressValues[0][2] = address[2];
-                    allStatusPageData[j][7] = address[0];
-                    allStatusPageData[j][8] = address[1];
-                    allStatusPageData[j][8] = address[2];
-                    break;
-                  case 4:
-                    addressValues[0][0] = address[0];
-                    addressValues[0][1] = address[1];
-                    addressValues[0][2] = address[2];
-                    addressValues[0][3] = formatPostalCode(address[3]);
-                    allStatusPageData[j][7] = address[0];
-                    allStatusPageData[j][8] = address[1];
-                    allStatusPageData[j][8] = address[2];
-                    break;
-                  default:
-                    addressValues[0][0] = address[0];
-                    allStatusPageData[j][7] = address[0];
+                  case 1:
+                    addressValues[0][0] = toProper(address[0]);
+                    allStatusPageData[j][7] = toProper(address[0]);
                     allStatusPageData[j][8] = '';
                     allStatusPageData[j][9] = '';
+                    range.setValue(addressValues[0][0] + ', ,  ')
+                    break;
+                  case 2:
+                    addressValues[0][0] = toProper(address[0]);
+                    addressValues[0][1] = toProper(address[1]);
+                    allStatusPageData[j][7] = toProper(address[0]);
+                    allStatusPageData[j][8] = toProper(address[1]);
+                    allStatusPageData[j][9] = '';
+                    range.setValue(addressValues[0][0] + ', ' + addressValues[0][1] + ',  ')
+                    break;
+                  case 3:
+                    addressValues[0][0] = toProper(address[0]);
+                    addressValues[0][1] = toProper(address[1]);
+                    addressValues[0][2] = address[2].toUpperCase();
+                    allStatusPageData[j][7] = toProper(address[0]);
+                    allStatusPageData[j][8] = toProper(address[1]);
+                    allStatusPageData[j][9] = toProper(address[2]);
+                    range.setValue(addressValues[0][0] + ', ' + addressValues[0][1] + ', ' + addressValues[0][2] + '  ')
+                    break;
+                  case 4:
+                    addressValues[0][0] = toProper(address[0]);
+                    addressValues[0][1] = toProper(address[1]);
+                    addressValues[0][2] = address[2].toUpperCase();
+                    allStatusPageData[j][ 7] = toProper(address[0]);
+                    allStatusPageData[j][ 8] = toProper(address[1]);
+                    allStatusPageData[j][ 9] = toProper(address[2]);
+                    allStatusPageData[j][10] = addressValues[0][3];
+                    range.setValue(addressValues[0][0] + ', ' + addressValues[0][1] + ', ' + addressValues[0][2] + '  ' + addressValues[0][3])
+                    break;
+                  default:
+                    addressValues[0][0] = toProper(address[0]);
+                    allStatusPageData[j][7] = toProper(address[0]);
+                    allStatusPageData[j][8] = '';
+                    allStatusPageData[j][9] = '';
+                    range.setValue(addressValues[0][0] + ', ,  ')
                 }
 
                 addressRange.setNumberFormat('@').setValues(addressValues)
