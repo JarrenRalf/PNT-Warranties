@@ -947,8 +947,8 @@ function requestNewStatus()
     template.status = response;
     
     MailApp.sendEmail({
-      to: "lb_blitz_allstar@hotmail.com", // "adrian@pacificnetandtwine.com",
-      cc: "lb_blitz_allstar@hotmail.com",
+      to: "adrian@pacificnetandtwine.com",
+      cc: "jarren@pacificnetandtwine.com",
       subject: "Proposed New Status on the PNT Warranty & Service Log Spreadsheet",
       htmlBody: template.evaluate().getContent(),
     })
@@ -1228,7 +1228,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                     addressValues[0][2] = address[2].toUpperCase();
                     allStatusPageData[j][7] = toProper(address[0]);
                     allStatusPageData[j][8] = toProper(address[1]);
-                    allStatusPageData[j][9] = toProper(address[2]);
+                    allStatusPageData[j][9] = address[2].toUpperCase();
                     range.setValue(addressValues[0][0] + ', ' + addressValues[0][1] + ', ' + addressValues[0][2] + '  ')
                     break;
                   case 4:
@@ -1237,7 +1237,7 @@ function updateAllActiveWarranties_RepairForm(e, range, row, col, repairForm, sp
                     addressValues[0][2] = address[2].toUpperCase();
                     allStatusPageData[j][ 7] = toProper(address[0]);
                     allStatusPageData[j][ 8] = toProper(address[1]);
-                    allStatusPageData[j][ 9] = toProper(address[2]);
+                    allStatusPageData[j][ 9] = address[2].toUpperCase();
                     allStatusPageData[j][10] = addressValues[0][3];
                     range.setValue(addressValues[0][0] + ', ' + addressValues[0][1] + ', ' + addressValues[0][2] + '  ' + addressValues[0][3])
                     break;
